@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import * as L from 'leaflet';
 import { MapService } from '../common/services/map.service';
@@ -15,12 +15,12 @@ export class MapComponent implements OnInit {
   data: any = [];
   active: any = [];
   map: any;
-  myIcon: any;
+  icon: any;
   inArray: any;
   outArray: any;
   markers: any = [];
 
-  constructor(private http: HttpClient, private mapService: MapService, private renderer: Renderer2) {
+  constructor(private http: HttpClient, private mapService: MapService) {
   }
 
   ngOnInit() {
@@ -48,7 +48,7 @@ export class MapComponent implements OnInit {
     L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
       attribution: 'Map'
     }).addTo(this.map);
-    this.myIcon = L.icon({
+    this.icon = L.icon({
       iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/images/marker-icon.png'
     });
   }
@@ -63,20 +63,20 @@ export class MapComponent implements OnInit {
       const elem = document.getElementById(element.name);
       let geo: any = [this.randomCoordinares(51.3, 51.8, 3), this.randomCoordinares(0.3, -0.4, 3)];
       if (elem.firstElementChild) {
-        this.markers[element.name] = L.marker(geo, {icon: this.myIcon}).addTo(this.map).bindTooltip(element.name).openTooltip()
+        this.markers[element.name] = L.marker(geo, {icon: this.icon}).addTo(this.map).bindTooltip(element.name).openTooltip()
           .on('click', () => {
             this.clearMarkerByClick(this.markers[element.name], element.id);
           });
         element.children.forEach((item) => {
             geo = [this.randomCoordinares(51.3, 51.8, 3), this.randomCoordinares(0.3, -0.4, 3)];
-            this.markers[item.name] = L.marker(geo, {icon: this.myIcon}).addTo(this.map).bindTooltip(item.name).openTooltip()
+            this.markers[item.name] = L.marker(geo, {icon: this.icon}).addTo(this.map).bindTooltip(item.name).openTooltip()
               .on('click', () => {
                 this.clearMarkerByClick(this.markers[item.name], item.parent_id);
               });
           }
         );
       } else {
-        this.markers[element.name] = L.marker(geo, {icon: this.myIcon}).addTo(this.map).bindTooltip(element.name).openTooltip()
+        this.markers[element.name] = L.marker(geo, {icon: this.icon}).addTo(this.map).bindTooltip(element.name).openTooltip()
           .on('click', () => {
             this.clearMarkerByClick(this.markers[element.name], element.id);
           });
@@ -84,19 +84,24 @@ export class MapComponent implements OnInit {
     }
   }
 
-  clearMarkerByClick(element, elementId) {
+  /**
+   * To remove marker and element in list by click on marker
+   * @param element - marker from map
+   * @param parentId
+   */
+  clearMarkerByClick(element, parentId) {
     const index = this.active.findIndex(item => item.name === element._tooltip._content);
     if (index !== -1) {
       this.changeListDestination('active', this.active[index]);
     } else {
-      const indexParent = this.active.findIndex(item => item.id === elementId);
+      const indexParent = this.active.findIndex(item => item.id === parentId);
       const indexChild = this.active[indexParent].children.findIndex(item => item.name === element._tooltip._content);
       this.changeListDestination('active', this.active[indexParent].children[indexChild]);
     }
   }
 
   /**
-   * To delete marker from map
+   * To delete marker from map by click on list element
    * @param listName - source list
    * @param element - element which we delete
    */
