@@ -1,0 +1,38 @@
+<div class="btn-container">
+  <p> Toggle
+    <button class="data" (click)="toggleList()">{{buttonName}}</button>
+  </p>
+</div>
+<div *ngIf="show" class="container">
+  <div>
+    <p> Data</p>
+    <ul>
+      <li *ngFor="let element of data" [id]="element.name" (click)="changeListDestination('data', element)">
+        {{ element.name }}
+        <ul>
+          <li *ngFor="let children of element.children" [id]="children.name" (click)="changeListDestination('data', children)">
+            {{ children.name }}
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+
+  <div>
+    <p> Active</p>
+    <ul>
+      <li *ngFor="let element of active" [id]="element.name" (click)="changeListDestination('active', element)">
+        {{ element.name }}
+        <ul>
+          <li *ngFor="let children of element.children" [id]="children.name" (click)="changeListDestination('active', children)">
+            {{ children.name }}
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div id="frugalmap">
+
+</div>
